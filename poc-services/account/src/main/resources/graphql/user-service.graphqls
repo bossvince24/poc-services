@@ -17,8 +17,8 @@ type Query {
 	findUser(id: ID!): User
 	getUserByName(name: String!): [User]
 	
-	getUserProfiles: [Profile]
-	findUserProfile(id: ID!): Profile
+	getProfiles: [Profile]
+	findProfile(id: ID!): Profile
 	getUsersByProfileBio(bio: String!): [Profile]
 	}
 	

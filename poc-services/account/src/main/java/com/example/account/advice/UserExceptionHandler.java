@@ -45,7 +45,7 @@ public class UserExceptionHandler extends DataFetcherExceptionResolverAdapter {
 			status = HttpStatus.BAD_REQUEST;
 			errorMap.put("errorMessage", ex.getMessage());
 		}
-		else if (ex instanceof UserNotFoundException exception) {
+		else if (ex instanceof UserNotFoundException) {
 			status = HttpStatus.NOT_FOUND;
 			errorMap.put("errorMessage", ex.getMessage());
 		}

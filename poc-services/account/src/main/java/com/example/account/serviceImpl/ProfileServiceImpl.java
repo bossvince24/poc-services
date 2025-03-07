@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import com.example.account.exception.UserNotFoundException;
 import com.example.account.model.Profile;
@@ -26,13 +25,13 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public List<Profile> getUserProfiles() {
+	public List<Profile> getProfiles() {
 		// TODO Auto-generated method stub
 		return repository.findAll();
 	}
 
 	@Override
-	public Optional<Profile> findUserProfile(Long id) {
+	public Optional<Profile> findProfile(Long id) {
 		// TODO Auto-generated method stub
 		return repository.findById(id);
 	}

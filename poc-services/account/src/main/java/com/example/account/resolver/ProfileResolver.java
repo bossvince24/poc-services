@@ -22,13 +22,13 @@ public class ProfileResolver {
 	}
 	
 	@QueryMapping
-	public List<Profile> getUserProfiles() {
-		return serviceImpl.getUserProfiles();
+	public List<Profile> getProfiles() {
+		return serviceImpl.getProfiles();
 	}
 	
 	@QueryMapping
-	public Profile findUserProfile(@Argument Long id) {
-		Optional<Profile> profileOptional = serviceImpl.findUserProfile(id);
+	public Profile findProfile(@Argument Long id) {
+		Optional<Profile> profileOptional = serviceImpl.findProfile(id);
 		return profileOptional.get();
 	}
 	

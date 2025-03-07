@@ -8,8 +8,8 @@ import com.example.account.model.Profile;
 public interface ProfileService {
 	
 	Profile addProfile(Profile profile);
-	List<Profile> getUserProfiles();
-	Optional<Profile> findUserProfile(Long id);
+	List<Profile> getProfiles();
+	Optional<Profile> findProfile(Long id);
 	List<Profile> getUsersByProfileBio(String bio);
 	
 }
