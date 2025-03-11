@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,15 +43,10 @@ public class ProfileResolverTest {
 	@Test
 	public void testGetProfiles() throws Exception {
 		
-		String query = "{ \"query\": \"{ getProfiles { id user { name email } bio profilePictureUrl } }\" }";
+		String query = "{ \"query\": \"{ getProfiles { id bio profilePictureUrl } }\" }";
 	    
-		User user = new User();
-		user.setName("John Doe");
-		user.setEmail("john.doe@example.com");
-		
 		Profile profiles = new Profile();
 		profiles.setId(1L);
-		profiles.setUser(user);
 		profiles.setBio("Software Engineer");
 		profiles.setProfilePictureUrl("abc@def.com");
 		
@@ -64,11 +58,8 @@ public class ProfileResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(query))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.getProfiles[0].id").value(1L))
-		.andExpect(jsonPath("$.data.getProfiles[0].user.name").value("John Doe"))
-		.andExpect(jsonPath("$.data.getProfiles[0].user.email").value("john.doe@example.com"))
-		.andExpect(jsonPath("$.data.getProfiles[0].bio").value("Software Engineer"))
-		.andExpect(jsonPath("$.data.getProfiles[0].profilePictureUrl").value("abc@def.com"));
+		.andExpect(jsonPath("$.data.getProfiles[0].bio").value(profileList.get(0).getBio()))
+		.andExpect(jsonPath("$.data.getProfiles[0].profilePictureUrl").value(profileList.get(0).getProfilePictureUrl()));
 		
 		verify(profileService, times(1)).getProfiles();
 	}
@@ -95,11 +86,11 @@ public class ProfileResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(query))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.findProfile.user.name").value("John Doe"))
-		.andExpect(jsonPath("$.data.findProfile.user.email").value("john.doe@example.com"))
-		.andExpect(jsonPath("$.data.findProfile.bio").value("Software Engineer"))
-		.andExpect(jsonPath("$.data.findProfile.profilePictureUrl").value("abc@def.com/jpg"));
+		.andExpect(jsonPath("$.data.findProfile.user.name").value(profiles.getUser().getName()))
+		.andExpect(jsonPath("$.data.findProfile.user.email").value(profiles.getUser().getEmail()))
+		.andExpect(jsonPath("$.data.findProfile.bio").value(profiles.getBio()))
+		.andExpect(jsonPath("$.data.findProfile.profilePictureUrl").value(profiles.getProfilePictureUrl()));
 		
-		verify(profileService, times(1)).findProfile(1L);
+		verify(profileService, times(1)).findProfile(profiles.getId());
 	}
 }

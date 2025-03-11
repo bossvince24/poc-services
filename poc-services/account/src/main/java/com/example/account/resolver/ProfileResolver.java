@@ -31,9 +31,4 @@ public class ProfileResolver {
 		Optional<Profile> profileOptional = serviceImpl.findProfile(id);
 		return profileOptional.get();
 	}
-	
-	@QueryMapping
-	public List<Profile> getUsersByProfileBio(@Argument String bio) {
-		return serviceImpl.getUsersByProfileBio(bio);
-	}
 }

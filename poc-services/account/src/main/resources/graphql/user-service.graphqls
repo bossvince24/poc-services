@@ -9,17 +9,18 @@ type Profile {
 	id: ID!
 	user: User!
 	bio: String!
-	profilePictureUrl: String!
+	profilePictureUrl: String
 	}
 	
 type Query {
 	getUsers: [User]
 	findUser(id: ID!): User
 	getUserByName(name: String!): [User]
+	getUsersByProfileBio(bio: String!): [User]
+	getUserProfiles: [User]
 	
 	getProfiles: [Profile]
 	findProfile(id: ID!): Profile
-	getUsersByProfileBio(bio: String!): [Profile]
 	}
 	
 type Mutation {

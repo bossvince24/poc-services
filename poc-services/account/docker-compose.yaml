@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: account-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - h2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+
+  h2:
+    image: oscarfonts/h2  
+    container_name: h2_database
+    restart: always
+    ports:
+      - "8082:8082" 
+    environment:
+      - H2_OPTIONS=-ifNotExists
+    volumes:
+      - h2-data:/opt/h2-data
+
+volumes:
+  h2-data:

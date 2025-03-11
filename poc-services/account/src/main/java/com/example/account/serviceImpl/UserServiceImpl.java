@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(User user, Long id) {
 		// TODO Auto-generated method stub
-		User existingUser = repository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+		User existingUser = repository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found."));
 		
 		existingUser.setName(user.getName());
 		existingUser.setEmail(user.getEmail());
@@ -58,6 +58,20 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException("No users found with name: " + name);
 		}
 		return users;
+	}
+	
+	public List<User> getUsersByProfileBio(String bio) {
+		List<User> users = repository.findByBioContainingIgnoreCase(bio);
+		if (users.isEmpty()) {
+			throw new UserNotFoundException("No users found with bio: " + bio);
+		}
+		return users;
+	}
+
+	@Override
+	public List<User> getUserProfiles() {
+		// TODO Auto-generated method stub
+		return repository.findAll();
 	}
 
 }

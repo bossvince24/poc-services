@@ -75,10 +75,10 @@ public class UserResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(graphquery))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.addUser.name").value("John Doe"))
-		.andExpect(jsonPath("$.data.addUser.email").value("john.doe@example.com"))
-		.andExpect(jsonPath("$.data.addUser.profile.bio").value("Software Developer"))
-		.andExpect(jsonPath("$.data.addUser.profile.profilePictureUrl").value("http://example.com/profile.jpg"));
+		.andExpect(jsonPath("$.data.addUser.name").value(mockUser.getName()))
+		.andExpect(jsonPath("$.data.addUser.email").value(mockUser.getEmail()))
+		.andExpect(jsonPath("$.data.addUser.profile.bio").value(mockUser.getProfile().getBio()))
+		.andExpect(jsonPath("$.data.addUser.profile.profilePictureUrl").value(mockUser.getProfile().getProfilePictureUrl()));
 		
 		verify(profileService, times(1)).addProfile(mockProfile);
 		verify(userService, times(1)).addUser(mockUser);
@@ -127,9 +127,9 @@ public class UserResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(query))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.findUser.id").value(1))
-		.andExpect(jsonPath("$.data.findUser.name").value("John"))
-		.andExpect(jsonPath("$.data.findUser.email").value("john@example.com"));
+		.andExpect(jsonPath("$.data.findUser.id").value(mockUser.getId()))
+		.andExpect(jsonPath("$.data.findUser.name").value(mockUser.getName()))
+		.andExpect(jsonPath("$.data.findUser.email").value(mockUser.getEmail()));
 		
 		verify(userService, times(1)).findUser(1L);
 	}
@@ -154,10 +154,10 @@ public class UserResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(query))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.getUserByName[0].name").value("Jane"))
-		.andExpect(jsonPath("$.data.getUserByName[0].email").value("jane@example.com"));
+		.andExpect(jsonPath("$.data.getUserByName[0].name").value(usersList.get(0).getName()))
+		.andExpect(jsonPath("$.data.getUserByName[0].email").value(usersList.get(0).getEmail()));
 		
-		verify(userService, times(1)).getUserByName("Jane");
+		verify(userService, times(1)).getUserByName(users.getName());
 	}
 	
 	@DisplayName("Update User Test")
@@ -180,11 +180,11 @@ public class UserResolverTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(query))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.updateUser.id").value(1L))
-		.andExpect(jsonPath("$.data.updateUser.name").value("Jane Doe"))
-		.andExpect(jsonPath("$.data.updateUser.email").value("jane.doe@example.com"));
+		.andExpect(jsonPath("$.data.updateUser.id").value(users.getId()))
+		.andExpect(jsonPath("$.data.updateUser.name").value(users.getName()))
+		.andExpect(jsonPath("$.data.updateUser.email").value(users.getEmail()));
 		
-		verify(userService, times(1)).updateUser(any(User.class), eq(1L));
+		verify(userService, times(1)).updateUser(any(User.class), eq(users.getId()));
 	}
 	
 	@DisplayName("Delete User Test")
@@ -203,4 +203,70 @@ public class UserResolverTest {
 		
 		verify(userService, times(1)).deleteUser(1L);
 		}
+	
+	@DisplayName("Get Users By Profile Bio")
+	@Test
+	public void testGetUsersByProfileBio() throws Exception {
+		
+		String query = "{ \"query\": \" { getUsersByProfileBio (bio: \\\"Software Engineer\\\") { id name email profile { bio profilePictureUrl } } }\" }";
+		
+		Profile profile = new Profile();
+		profile.setBio("Software Engineer");
+		profile.setProfilePictureUrl("abc@def.com/jpeg");
+		
+		User users = new User();
+		users.setId(1L);
+		users.setName("Joe");
+		users.setEmail("joe@example.com");
+		users.setProfile(profile);
+		
+		List<User> userList = Arrays.asList(users);
+		
+		when(userService.getUsersByProfileBio("Software Engineer")).thenReturn(userList);
+		
+		mockMvc.perform(post("/graphql")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(query))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.data.getUsersByProfileBio[0].id").value(userList.get(0).getId()))
+		.andExpect(jsonPath("$.data.getUsersByProfileBio[0].name").value(userList.get(0).getName()))
+		.andExpect(jsonPath("$.data.getUsersByProfileBio[0].email").value(userList.get(0).getEmail()))
+		.andExpect(jsonPath("$.data.getUsersByProfileBio[0].profile.bio").value(userList.get(0).getProfile().getBio()))
+		.andExpect(jsonPath("$.data.getUsersByProfileBio[0].profile.profilePictureUrl").value(userList.get(0).getProfile().getProfilePictureUrl()));
+		
+		verify(userService, times(1)).getUsersByProfileBio(profile.getBio());
+	}
+	
+	@DisplayName("Get User Profile Test")
+	@Test
+	public void testGetUserProfiles() throws Exception {
+		
+		String query = "{ \"query\": \"{ getUserProfiles { id name email profile { bio profilePictureUrl } } }\" }";
+		
+		Profile profiles = new Profile();
+		profiles.setBio("Software Engineer");
+		profiles.setProfilePictureUrl("abc@def.com/jpg");
+		
+		User user = new User();
+		user.setId(1L);
+		user.setName("John Doe");
+		user.setEmail("john.doe@example.com");
+		user.setProfile(profiles);
+		
+		List<User> usersProfileList = Arrays.asList(user);
+		
+		when(userService.getUserProfiles()).thenReturn(usersProfileList);
+		
+		mockMvc.perform(post("/graphql")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(query))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.data.getUserProfiles[0].id").value(usersProfileList.get(0).getId()))
+		.andExpect(jsonPath("$.data.getUserProfiles[0].profile.bio").value(usersProfileList.get(0).getProfile().getBio()))
+		.andExpect(jsonPath("$.data.getUserProfiles[0].profile.profilePictureUrl").value(usersProfileList.get(0).getProfile().getProfilePictureUrl()))
+		.andExpect(jsonPath("$.data.getUserProfiles[0].name").value(usersProfileList.get(0).getName()))
+		.andExpect(jsonPath("$.data.getUserProfiles[0].email").value(usersProfileList.get(0).getEmail()));
+		
+		verify(userService, times(1)).getUserProfiles();
+	}
 }

@@ -75,4 +75,20 @@ public class UserResolver {
 		return userService.getUserByName(name);
 	}
 	
+	@QueryMapping
+	public List<User> getUsersByProfileBio(@Argument String bio) {
+		return userService.getUsersByProfileBio(bio);
+	}
+	
+	@QueryMapping
+	public List<User> getUserProfiles() {
+		List<User> usersProfiles = userService.getUserProfiles();
+		
+		if (usersProfiles.isEmpty()) {
+			throw new UserNotFoundException("No users found.");
+		}
+		return usersProfiles;
+		
+	}
+	
 }

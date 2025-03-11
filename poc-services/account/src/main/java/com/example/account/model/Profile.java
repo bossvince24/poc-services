@@ -1,6 +1,8 @@
 package com.example.account.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +27,6 @@ public class Profile {
 	private String bio;
 	private String profilePictureUrl;
 	
-	@OneToOne(mappedBy = "profile")
+	@OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private User user;
 }
