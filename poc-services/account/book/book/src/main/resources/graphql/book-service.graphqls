@@ -1,0 +1,33 @@
+type Book {
+	bookId: ID!
+	title: String!
+	author: Author!
+	publishedYear: Int!
+}
+
+type Author {
+	id: ID!
+	name: String!
+	books: [Book]
+}
+
+type DeleteBookResponse {
+	success: Boolean!
+	message: String!
+}
+
+type Query {
+	fetchAllBooks: [Book]
+	fetchBookById(bookId: ID!): Book
+	
+	fetchAllAuthors(page: Int!, size: Int!): [Author]
+}
+
+type Mutation {
+	addAuthor(name: String!): Author
+	addNewBook(title: String!, authorId: ID!, publishedYear: Int!): Book
+	updateBookDetails(id: ID!, title: String!, authorId: ID!, publishedYear: Int!): Book
+	deleteABook(id: ID!): DeleteBookResponse
+	
+	getAllBooks(authorId: ID, publishedYear: Int, page: Int!, size: Int!): [Book]
+}
